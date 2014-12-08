@@ -2,13 +2,13 @@ var React = require('react');
 
 var PlayerBar = React.createClass({
     _onBackwardClick: function() {
-        console.log("[TODO] - Backward");
+        this.props.onBackwardClick();
     },
     _onForwardClick: function() {
-        console.log("[TODO] - Forward");
+        this.props.onForwardClick();
     },
     _onPlayPauseClick: function() {
-        console.log("[TODO] - Play/Pause");
+        this.props.onPlayPauseClick();
     },
     render: function() {
         return (

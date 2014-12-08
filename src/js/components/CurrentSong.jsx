@@ -1,15 +1,16 @@
 var React = require('react');
 
 var CurrentSong = React.createClass({
+    componentDidMount: function() {
+    },
     render: function() {
         return (
             <div className="CurrentSong">
                 <div className="CurrentSong-Artwork">
-                    <img className="CurrentSong-Artwork-Img" src="http://upload.wikimedia.org/wikipedia/en/5/57/Coldplayparachutesalbumcover.jpg" />
+                    <img className="CurrentSong-Artwork-Img" src={this.props.artworkURL} />
                 </div>
                 <div className="CurrentSong-Song">
-                    <span className="CurrentSong-Song-Name">Yellow</span>
-                    <span className="CurrentSong-Song-Artist">Coldplay</span>
+                    {this.props.title}
                 </div>
             </div>
         );
