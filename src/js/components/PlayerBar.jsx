@@ -1,6 +1,7 @@
-var React = require('react');
+var React = require('react'),
+    PlayerBar;
 
-var PlayerBar = React.createClass({
+PlayerBar = React.createClass({
     _onBackwardClick: function() {
         this.props.onBackwardClick();
     },

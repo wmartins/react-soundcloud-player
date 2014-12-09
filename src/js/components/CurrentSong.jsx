@@ -1,8 +1,7 @@
-var React = require('react');
+var React = require('react'),
+    CurrentSong;
 
-var CurrentSong = React.createClass({
-    componentDidMount: function() {
-    },
+CurrentSong = React.createClass({
     render: function() {
         return (
             <div className="CurrentSong">

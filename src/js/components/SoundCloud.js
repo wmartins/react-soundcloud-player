@@ -1,5 +1,6 @@
-var Q = require('../vendor/q');
-var SoundCloud = {};
+var Q = require('../vendor/q'),
+    memo = {},
+    SoundCloud;
 
 SC.initialize({
     client_id: 'a3831dc9f09bc0d2bb73906a46ec3e08',
@@ -25,10 +26,13 @@ SoundCloud = {
         var dfd = Q.defer();
 
         SC.stream('/tracks/' + track.id, function(stream) {
-            dfd.resolve({
-                track: track,
-                stream: stream
-            });
+            if(!memo[track.id]) {
+                memo[track.id] = {
+                    track: track,
+                    stream: stream
+                };
+            }
+            dfd.resolve(memo[track.id]);
         });
 
         return dfd.promise;
