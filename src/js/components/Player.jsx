@@ -10,8 +10,24 @@ var Player = React.createClass({
         return {
             playing: false,
             currentSong: null,
-            current: -1
+            current: -1,
+            length: songs.length
         };
+    },
+    addEventListeners: function() {
+        window.addEventListener('keydown', function(e) {
+            switch(e.keyCode) {
+                case 32:
+                    this.togglePlayPause();
+                    break;
+                case 37:
+                    this.prev();
+                    break;
+                case 39:
+                    this.next();
+                    break;
+            }
+        }.bind(this));
     },
     _onBackwardClick: function() {
         this.prev();
@@ -20,6 +36,9 @@ var Player = React.createClass({
         this.next();
     },
     _onPlayPauseClick: function() {
+        this.togglePlayPause();
+    },
+    togglePlayPause: function() {
         if(this.state.playing) {
             this.pause();
         } else {
@@ -31,31 +50,42 @@ var Player = React.createClass({
             songs: songs
         });
 
+        this.addEventListeners();
+
         this.next();
     },
     next: function() {
-        SC.getTrack(songs[this.state.current + 1]).then(function(data) {
-            this.pause();
+        if(this.state.length - this.state.current) {
+            SC.getTrack(songs[this.state.current + 1]).then(function(data) {
+                var wasPlaying = this.state.playing;
 
-            this.setState({
-                currentSong: data,
-                current: this.state.current + 1
-            });
+                this.pause();
 
-            this.play();
-        }.bind(this));
+                this.setState({
+                    currentSong: data,
+                    current: this.state.current + 1,
+                    wasPlaying: this.state.playing
+                });
+
+                wasPlaying && this.play();
+            }.bind(this));
+        }
     },
     prev: function() {
-        SC.getTrack(songs[this.state.current - 1]).then(function(data) {
-            this.pause();
+        if(this.state.current) {
+            SC.getTrack(songs[this.state.current - 1]).then(function(data) {
+                var wasPlaying = this.state.playing;
 
-            this.setState({
-                currentSong: data,
-                current: this.state.current - 1
-            });
+                this.pause();
 
-            this.play();
-        }.bind(this));
+                this.setState({
+                    currentSong: data,
+                    current: this.state.current - 1
+                });
+
+                wasPlaying && this.play();
+            }.bind(this));
+        }
     },
     play: function() {
         this.state.currentSong.stream.play();
