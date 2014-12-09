@@ -8,57 +8,86 @@ var Q = require('../vendor/q');
 var Player = React.createClass({
     getInitialState: function() {
         return {
-            songs: [],
-            currentSong: {},
-            current: 0
+            playing: false,
+            currentSong: null,
+            current: -1
         };
     },
     _onBackwardClick: function() {
-        console.log("[TODO] - Backward");
+        this.prev();
     },
     _onForwardClick: function() {
-        console.log("[TODO] - Forward");
+        this.next();
     },
     _onPlayPauseClick: function() {
-        console.log("[TODO] - Play/Pause");
-    },
-    getSongInfo: function(trackId) {
-        var dfd = Q.defer();
-
-        SC.get('/tracks/' + trackId, function(data) {
-            dfd.resolve(data);
-        });
-
-        return dfd.promise;
+        if(this.state.playing) {
+            this.pause();
+        } else {
+            this.play();
+        }
     },
     componentDidMount: function() {
         this.setState({
             songs: songs
         });
 
-        this.getCurrentSongInfo();
+        this.next();
     },
-    getCurrentSongInfo: function() {
-        this.getSongInfo(this.state.songs[this.state.current]).then(
-            this.updateSongInfo
-        );
+    next: function() {
+        SC.getTrack(songs[this.state.current + 1]).then(function(data) {
+            this.pause();
+
+            this.setState({
+                currentSong: data,
+                current: this.state.current + 1
+            });
+
+            this.play();
+        }.bind(this));
     },
-    updateSongInfo: function(data) {
+    prev: function() {
+        SC.getTrack(songs[this.state.current - 1]).then(function(data) {
+            this.pause();
+
+            this.setState({
+                currentSong: data,
+                current: this.state.current - 1
+            });
+
+            this.play();
+        }.bind(this));
+    },
+    play: function() {
+        this.state.currentSong.stream.play();
         this.setState({
-            currentSong: data
+            playing: true
+        });
+    },
+    pause: function() {
+        this.state.currentSong && this.state.currentSong.stream.pause();
+        this.setState({
+            playing: false
         });
     },
     render: function() {
+        var currentSong = '';
+
+        if(this.state.currentSong) {
+            currentSong =
+                <CurrentSong
+                    artworkURL={this.state.currentSong.track.artwork_url}
+                    title={this.state.currentSong.track.title}
+                    />;
+        }
+
         return (
             <div>
-                <CurrentSong
-                    artworkURL={this.state.currentSong.artwork_url}
-                    title={this.state.currentSong.title}
-                    />
+                {currentSong}
                 <PlayerBar
                     onBackwardClick={this._onBackwardClick}
                     onForwardClick={this._onForwardClick}
                     onPlayPauseClick={this._onPlayPauseClick}
+                    playing={this.state.playing}
                     />
             </div>
         );

@@ -11,6 +11,8 @@ var PlayerBar = React.createClass({
         this.props.onPlayPauseClick();
     },
     render: function() {
+        var playPauseClass = this.props.playing ? 'fa-pause' : 'fa-play';
+
         return (
             <div className="PlayerBar">
                 <span
@@ -21,7 +23,7 @@ var PlayerBar = React.createClass({
                 <span
                     onClick={this._onPlayPauseClick}
                     className="PlayerControl">
-                    <span className="fa fa-pause"></span>
+                    <span className={'fa ' + playPauseClass}></span>
                 </span>
                 <span
                     onClick={this._onForwardClick}
