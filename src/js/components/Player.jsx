@@ -68,7 +68,7 @@ Player = React.createClass({
                     position: this.state.currentSong.stream.position
                 });
 
-                if(this.state.position > this.state.duration) {
+                if(this.state.position >= this.state.duration) {
                     if(this.hasNext()) {
                         this.next();
                     }
