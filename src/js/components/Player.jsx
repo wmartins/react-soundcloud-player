@@ -67,11 +67,23 @@ Player = React.createClass({
                 this.setState({
                     position: this.state.currentSong.stream.position
                 });
+
+                if(this.state.position > this.state.duration) {
+                    if(this.hasNext()) {
+                        this.next();
+                    }
+                    else {
+                        this.stop();
+                    }
+                }
             }
         }.bind(this), 1000);
     },
+    hasNext: function() {
+        return !!(this.state.length - this.state.current - 1);
+    },
     next: function() {
-        if(this.state.length - this.state.current - 1) {
+        if(this.hasNext()) {
             SC.getTrack(
                 this.state.songs[this.state.current + 1]
             ).then(function(data) {
@@ -93,8 +105,11 @@ Player = React.createClass({
             }.bind(this));
         }
     },
+    hasPrev: function() {
+        return this.state.current > 0;
+    },
     prev: function() {
-        if(this.state.current > 0) {
+        if(this.hasPrev()) {
             SC.getTrack(songs[this.state.current - 1]).then(function(data) {
                 var wasPlaying = this.state.playing;
 
