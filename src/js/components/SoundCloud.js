@@ -16,24 +16,32 @@ SoundCloud = {
     getTrackInfo: function(trackId) {
         var dfd = Q.defer();
 
-        SC.get('/tracks/' + trackId, function(track) {
-            dfd.resolve(track);
-        });
+        if(memo[trackId]) {
+            dfd.resolve(memo[trackId].track);
+        } else {
+            SC.get('/tracks/' + trackId, function(track) {
+                dfd.resolve(track);
+            });
+        }
 
         return dfd.promise;
     },
     getTrackStream: function(track) {
         var dfd = Q.defer();
 
-        SC.stream('/tracks/' + track.id, function(stream) {
-            if(!memo[track.id]) {
-                memo[track.id] = {
-                    track: track,
-                    stream: stream
-                };
-            }
+        if(memo[track.id]) {
             dfd.resolve(memo[track.id]);
-        });
+        } else {
+            SC.stream('/tracks/' + track.id, function(stream) {
+                if(!memo[track.id]) {
+                    memo[track.id] = {
+                        track: track,
+                        stream: stream
+                    };
+                }
+                dfd.resolve(memo[track.id]);
+            });
+        }
 
         return dfd.promise;
     }

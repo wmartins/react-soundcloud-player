@@ -52,28 +52,41 @@ Player = React.createClass({
     },
     componentDidMount: function() {
         this.setState({
-            songs: songs
+            songs: songs,
+            length: songs.length
         });
 
+        this.setTrackTimer();
         this.addEventListeners();
 
         this.next();
     },
+    setTrackTimer: function() {
+        setInterval(function() {
+            if(this.state.playing) {
+                this.setState({
+                    position: this.state.currentSong.stream.position
+                });
+            }
+        }.bind(this), 1000);
+    },
     next: function() {
-        if(this.state.length - this.state.current) {
+        if(this.state.length - this.state.current - 1) {
             SC.getTrack(
                 this.state.songs[this.state.current + 1]
             ).then(function(data) {
                 var wasPlaying = this.state.playing;
 
-                this.pause();
+                this.stop();
 
                 this.setState({
                     currentSong: data,
                     current: this.state.current + 1,
                     wasPlaying: this.state.playing,
                     currentArtworkURL: data.track.artwork_url,
-                    currentTitle: data.track.title
+                    currentTitle: data.track.title,
+                    duration: data.track.duration,
+                    position: 0
                 });
 
                 wasPlaying && this.play();
@@ -81,15 +94,20 @@ Player = React.createClass({
         }
     },
     prev: function() {
-        if(this.state.current) {
+        if(this.state.current > 0) {
             SC.getTrack(songs[this.state.current - 1]).then(function(data) {
                 var wasPlaying = this.state.playing;
 
-                this.pause();
+                this.stop();
 
                 this.setState({
                     currentSong: data,
-                    current: this.state.current - 1
+                    current: this.state.current - 1,
+                    wasPlaying: this.state.playing,
+                    currentArtworkURL: data.track.artwork_url,
+                    currentTitle: data.track.title,
+                    duration: data.track.duration,
+                    position: 0
                 });
 
                 wasPlaying && this.play();
@@ -113,12 +131,25 @@ Player = React.createClass({
             playing: false
         });
     },
+    stop: function() {
+        if(this.state.currentSong.stream) {
+            this.state.currentSong.stream.stop();
+        }
+
+        this.setState({
+            playing: false
+        });
+    },
     render: function() {
         return (
             <div>
                 <CurrentSong
                     artworkURL={this.state.currentArtworkURL}
                     title={this.state.currentTitle}
+                    />
+                <PlayerTrack
+                    duration={this.state.duration}
+                    position={this.state.position}
                     />
                 <PlayerBar
                     onBackwardClick={this._onBackwardClick}
