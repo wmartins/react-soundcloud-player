@@ -63,11 +63,8 @@ Player = React.createClass({
     },
     setTrackTimer: function() {
         setInterval(function() {
-            if(this.state.playing) {
-                this.setState({
-                    position: this.state.currentSong.stream.position
-                });
-
+            if(this.state.playing &&
+                this.state.currentSong.stream.durationEstimate) {
                 if(this.state.position >= this.state.duration) {
                     if(this.hasNext()) {
                         this.next();
@@ -76,6 +73,11 @@ Player = React.createClass({
                         this.stop();
                     }
                 }
+
+                this.setState({
+                    position: this.state.currentSong.stream.position,
+                    duration: this.state.currentSong.stream.durationEstimate
+                });
             }
         }.bind(this), 1000);
     },
