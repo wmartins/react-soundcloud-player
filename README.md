@@ -1,5 +1,5 @@
 React SoundCloud Player
----
+===
 
 WIP (but you can check a running demo [here](http://wmartins.github.io/react-soundcloud-player/)).
 
